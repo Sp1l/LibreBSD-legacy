@@ -228,7 +228,11 @@ pk_encode(char *in, char *out, DesData *key)
 	memset(buf,0,sizeof(buf));
 	deslen = ((strlen(in) + 7)/8)*8;
 	DES_key_sched(key, &k);
+<<<<<<< HEAD
 	DES_cbc_encrypt(in, buf, deslen, &k, &i, DES_ENCRYPT);
+=======
+	DES_cbc_encrypt(in,buf,deslen, &k,&i,DES_ENCRYPT);
+>>>>>>> 843c7265f352... LibreBSD: Make base utils build with LibreSSL
 	for (l=0,op=0;l<deslen;l++) {
 		out[op++] = hextab[(buf[l] & 0xf0) >> 4];
 		out[op++] = hextab[(buf[l] & 0x0f)];
