@@ -1,4 +1,5 @@
 #	$OpenBSD: Makefile,v 1.2 2017/01/24 09:25:27 deraadt Exp $
+# $FreeBSD$
 
 .include "../../lib/libcrypto/Makefile.inc.libressl"
 
