@@ -3,7 +3,7 @@
 SHLIBDIR?=      /lib
 
 .include <bsd.own.mk>
-.warning In Makefile.libressl
+
 LIB=            crypto
 SHLIB_MAJOR=    43
 
