@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 LIB=	ssl
-SHLIB_MAJOR=	44
+SHLIB_MAJOR=	45
 
 NO_LINT=
 
