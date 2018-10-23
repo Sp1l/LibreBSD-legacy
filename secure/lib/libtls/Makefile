@@ -1,5 +1,4 @@
 #	$OpenBSD: Makefile,v 1.22 2015/10/07 23:33:38 beck Exp $
-# $FreeBSD$
 
 .include "../libcrypto/Makefile.inc.libressl"
 
@@ -11,7 +10,7 @@ CFLAGS+= -Wall -Werror -Wimplicit
 CFLAGS+= -DLIBRESSL_INTERNAL
 
 LIB=	tls
-SHLIB_MAJOR=	17
+SHLIB_MAJOR=	18
 
 LTLS_SRC=	${LIBRESSL_SRC}/tls
 
