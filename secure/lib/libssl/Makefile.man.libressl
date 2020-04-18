@@ -118,18 +118,6 @@ MAN= \
 	ssl.3
 
 MKLINKS+= \
-	BIO_f_ssl.3 BIO_do_handshake.3 \
-	BIO_f_ssl.3 BIO_get_num_renegotiates.3 \
-	BIO_f_ssl.3 BIO_get_ssl.3 \
-	BIO_f_ssl.3 BIO_new_buffer_ssl_connect.3 \
-	BIO_f_ssl.3 BIO_new_ssl.3 \
-	BIO_f_ssl.3 BIO_new_ssl_connect.3 \
-	BIO_f_ssl.3 BIO_set_ssl.3 \
-	BIO_f_ssl.3 BIO_set_ssl_mode.3 \
-	BIO_f_ssl.3 BIO_set_ssl_renegotiate_bytes.3 \
-	BIO_f_ssl.3 BIO_set_ssl_renegotiate_timeout.3 \
-	BIO_f_ssl.3 BIO_ssl_copy_session_id.3 \
-	BIO_f_ssl.3 BIO_ssl_shutdown.3 \
 	PEM_read_SSL_SESSION.3 PEM_read_bio_SSL_SESSION.3 \
 	PEM_read_SSL_SESSION.3 PEM_write_SSL_SESSION.3 \
 	PEM_read_SSL_SESSION.3 PEM_write_bio_SSL_SESSION.3 \
@@ -156,6 +144,9 @@ MKLINKS+= \
 	SSL_CTX_get_verify_mode.3 SSL_get_verify_depth.3 \
 	SSL_CTX_get_verify_mode.3 SSL_get_verify_mode.3 \
 	SSL_CTX_load_verify_locations.3 SSL_CTX_set_default_verify_paths.3 \
+	SSL_CTX_new.3 DTLS_client_method.3 \
+	SSL_CTX_new.3 DTLS_method.3 \
+	SSL_CTX_new.3 DTLS_server_method.3 \
 	SSL_CTX_new.3 DTLSv1_client_method.3 \
 	SSL_CTX_new.3 DTLSv1_method.3 \
 	SSL_CTX_new.3 DTLSv1_server_method.3 \
@@ -322,7 +313,9 @@ MKLINKS+= \
 	SSL_alert_type_string.3 SSL_alert_type_string_long.3 \
 	SSL_get_certificate.3 SSL_get_privatekey.3 \
 	SSL_get_ciphers.3 SSL_CTX_get_ciphers.3 \
+	SSL_get_ciphers.3 SSL_get1_supported_ciphers.3 \
 	SSL_get_ciphers.3 SSL_get_cipher_list.3 \
+	SSL_get_ciphers.3 SSL_get_client_ciphers.3 \
 	SSL_get_client_CA_list.3 SSL_CTX_get_client_CA_list.3 \
 	SSL_get_client_random.3 SSL_SESSION_get_master_key.3 \
 	SSL_get_client_random.3 SSL_get_server_random.3 \

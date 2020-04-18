@@ -76,12 +76,13 @@ MLINKS+=\
 	tls_load_file.3 tls_config_set_verify_depth.3 \
 	tls_load_file.3 tls_config_verify_client.3 \
 	tls_load_file.3 tls_config_verify_client_optional.3 \
+	tls_load_file.3 tls_default_ca_cert_file.3 \
 	tls_load_file.3 tls_unload_file.3 \
 	tls_ocsp_process_response.3 tls_peer_ocsp_cert_status.3 \
 	tls_ocsp_process_response.3 tls_peer_ocsp_crl_reason.3 \
 	tls_ocsp_process_response.3 tls_peer_ocsp_next_update.3 \
 	tls_ocsp_process_response.3 tls_peer_ocsp_response_status.3 \
-	tls_ocsp_process_response.3 tls_peer_ocsp_result_msg.3 \
+	tls_ocsp_process_response.3 tls_peer_ocsp_result.3 \
 	tls_ocsp_process_response.3 tls_peer_ocsp_revocation_time.3 \
 	tls_ocsp_process_response.3 tls_peer_ocsp_this_update.3 \
 	tls_ocsp_process_response.3 tls_peer_ocsp_url.3 \
@@ -89,4 +90,4 @@ MLINKS+=\
 	tls_read.3 tls_error.3 \
 	tls_read.3 tls_handshake.3 \
 	tls_read.3 tls_reset.3 \
-	tls_read.3 tls_write.3
+	tls_read.3 tls_write.3 \

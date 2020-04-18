@@ -5,56 +5,18 @@ SHLIBDIR?=      /lib
 .include <bsd.own.mk>
 
 LIB=            crypto
-SHLIB_MAJOR=    44
+SHLIB_MAJOR=    45
 
 NO_LINT=
 
 .if exists(Makefile.man.libressl)
 .include "Makefile.man.libressl"
 .endif
-
 .include "Makefile.inc.libressl"
-
-CFLAGS+= -Wall -Wundef -Werror
-
-.if ${MACHINE_ARCH} == "sparc"
-PICFLAG=-fPIC
-.endif
-
-INCS+=	aes.h asn1.h asn1_mac.h asn1t.h \
-	blowfish.h bio.h bn.h buffer.h \
-	camellia.h cast.h chacha.h cmac.h comp.h conf.h conf_api.h crypto.h curve25519.h \
-	des.h dh.h dsa.h dso.h \
-	ec.h ecdh.h ecdsa.h engine.h err.h evp.h \
-	gost.h hkdf.h hmac.h \
-	idea.h \
-	lhash.h \
-	md4.h md5.h modes.h \
-	obj_dat.h obj_mac.h objects.h ocsp.h opensslconf.h opensslfeatures.h opensslv.h ossl_typ.h \
-	pem.h pem2.h pkcs12.h pkcs7.h poly1305.h \
-	rand.h rc2.h rc4.h ripemd.h rsa.h \
-	sha.h safestack.h stack.h \
-	ts.h txt_db.h \
-	ui.h ui_compat.h \
-	whrlpool.h \
-	x509.h \
-	x509_vfy.h x509v3.h
-
-INCSDIR=	${INCLUDEDIR}/openssl
-
-# Hardware engines
-CFLAGS+= -DOPENSSL_NO_HW_PADLOCK # XXX enable this?
-
-
-CFLAGS+= -I${LCRYPTO_SRC} -I${LCRYPTO_SRC}/include
-CFLAGS+= -I${LCRYPTO_SRC}/asn1 -I${LCRYPTO_SRC}/bn -I${LCRYPTO_SRC}/evp
-CFLAGS+= -I${LCRYPTO_SRC}/modes
-
-CFLAGS+= -DHAVE_EXPLICIT_BZERO=1 -DHAVE_REALLOCARRAY=1
 
 # compat/
 SRCS+=	freezero.c getentropy_freebsd.c recallocarray.c
-SRCS+=	timingsafe_bcmp.c timingsafe_memcmp.c
+SRCS+=	syslog_r.c timingsafe_bcmp.c timingsafe_memcmp.c
 
 ### This is copied straight from the original Makefile
 ### src/lib/libcrypto/crypto/Makefile
@@ -62,7 +24,7 @@ SRCS+=	timingsafe_bcmp.c timingsafe_memcmp.c
 # crypto/
 SRCS+= cryptlib.c malloc-wrapper.c mem_dbg.c cversion.c ex_data.c cpt_err.c
 SRCS+= o_time.c o_str.c o_init.c
-SRCS+= mem_clr.c crypto_init.c
+SRCS+= mem_clr.c crypto_init.c crypto_lock.c
 
 # aes/
 SRCS+= aes_misc.c aes_ecb.c aes_cfb.c aes_ofb.c
@@ -80,9 +42,8 @@ SRCS+= tasn_new.c tasn_fre.c tasn_enc.c tasn_dec.c tasn_utl.c tasn_typ.c
 SRCS+= tasn_prn.c ameth_lib.c
 SRCS+= f_int.c f_string.c n_pkey.c
 SRCS+= f_enum.c x_pkey.c a_bool.c x_exten.c bio_asn1.c bio_ndef.c asn_mime.c
-SRCS+= asn1_gen.c asn1_par.c asn1_lib.c asn1_err.c a_bytes.c a_strnid.c
+SRCS+= asn1_gen.c asn1_par.c asn1_lib.c asn1_err.c a_strnid.c
 SRCS+= evp_asn1.c asn_pack.c p5_pbe.c p5_pbev2.c p8_pkey.c asn_moid.c
-SRCS+= a_set.c
 SRCS+= a_time_tm.c
 
 # bf/
@@ -151,12 +112,12 @@ SRCS+= dso_openssl.c
 # ec/
 SRCS+= ec_lib.c ecp_smpl.c ecp_mont.c ecp_nist.c ec_cvt.c ec_mult.c
 SRCS+= ec_err.c ec_curve.c ec_check.c ec_print.c ec_asn1.c ec_key.c
-SRCS+= ec2_smpl.c ec2_mult.c ec_ameth.c ec_pmeth.c eck_prn.c
-SRCS+= ecp_nist.c
+SRCS+= ec2_smpl.c ec2_mult.c ec_ameth.c ec_pmeth.c ec_kmeth.c eck_prn.c
+#SRCS+= ecp_nistp224.c ecp_nistp256.c ecp_nistp521.c ecp_nistputil.c
 SRCS+= ecp_oct.c ec2_oct.c ec_oct.c
 
 # ecdh/
-SRCS+= ech_lib.c ech_key.c ech_err.c
+SRCS+= ech_lib.c ech_key.c ech_err.c ecdh_kdf.c
 
 # ecdsa/
 SRCS+= ecs_lib.c ecs_asn1.c ecs_ossl.c ecs_sign.c ecs_vrf.c ecs_err.c
@@ -165,7 +126,7 @@ SRCS+= ecs_lib.c ecs_asn1.c ecs_ossl.c ecs_sign.c ecs_vrf.c ecs_err.c
 SRCS+= eng_err.c eng_lib.c eng_list.c eng_init.c eng_ctrl.c
 SRCS+= eng_table.c eng_pkey.c eng_fat.c eng_all.c
 SRCS+= tb_rsa.c tb_dsa.c tb_ecdsa.c tb_dh.c tb_ecdh.c tb_rand.c tb_store.c
-SRCS+= tb_cipher.c tb_digest.c tb_pkmeth.c tb_asnmth.c
+SRCS+= tb_cipher.c tb_digest.c tb_pkmeth.c tb_asnmth.c tb_eckey.c
 SRCS+= eng_openssl.c eng_cnf.c eng_dyn.c
 # XXX unnecessary? handled in EVP now...
 # SRCS+= eng_aesni.c # local addition
@@ -178,7 +139,7 @@ SRCS+= encode.c digest.c evp_enc.c evp_key.c
 SRCS+= e_des.c e_bf.c e_idea.c e_des3.c e_camellia.c
 SRCS+= e_rc4.c e_aes.c names.c
 SRCS+= e_xcbc_d.c e_rc2.c e_cast.c
-SRCS+= m_null.c m_md4.c m_md5.c m_sha1.c m_wp.c
+SRCS+= m_null.c m_md4.c m_md5.c m_sha1.c m_sm3.c m_wp.c
 SRCS+= m_dss.c m_dss1.c m_ripemd.c m_ecdsa.c
 SRCS+= p_open.c p_seal.c p_sign.c p_verify.c p_lib.c p_enc.c p_dec.c
 SRCS+= bio_md.c bio_b64.c bio_enc.c evp_err.c e_null.c
@@ -188,6 +149,7 @@ SRCS+= e_old.c pmeth_lib.c pmeth_fn.c pmeth_gn.c m_sigver.c
 SRCS+= e_aes_cbc_hmac_sha1.c e_rc4_hmac_md5.c
 SRCS+= e_chacha.c evp_aead.c e_chacha20poly1305.c
 SRCS+= e_gost2814789.c m_gost2814789.c m_gostr341194.c m_streebog.c
+SRCS+= e_sm4.c
 SRCS+= m_md5_sha1.c
 
 # gost/
@@ -257,6 +219,12 @@ SRCS+= rsa_pmeth.c rsa_crpt.c rsa_meth.c
 
 # sha/
 SRCS+= sha1dgst.c sha1_one.c sha256.c sha512.c
+
+# sm3/
+SRCS+= sm3.c
+
+# sm4/
+SRCS+= sm4.c
 
 # stack/
 SRCS+= stack.c
@@ -335,6 +303,46 @@ SRCS+= rc4_enc.c rc4_skey.c
 SRCS+= wp_block.c
 .endif # CPUARCH amd64
 
+INCS+=	aes.h asn1.h asn1t.h \
+	blowfish.h bio.h bn.h buffer.h \
+	camellia.h cast.h chacha.h cmac.h cms.h comp.h conf.h conf_api.h crypto.h curve25519.h \
+	des.h dh.h dsa.h dso.h \
+	ec.h ecdh.h ecdsa.h engine.h err.h evp.h \
+	gost.h \
+	hkdf.h hmac.h \
+	idea.h \
+	lhash.h \
+	md4.h md5.h modes.h \
+	obj_mac.h objects.h ocsp.h opensslconf.h opensslfeatures.h opensslv.h ossl_typ.h \
+	pem.h pem2.h pkcs12.h pkcs7.h poly1305.h \
+	rand.h rc2.h rc4.h ripemd.h rsa.h sha.h \
+	sm3.h sm4.h safestack.h stack.h ts.h txt_db.h \
+	ui.h ui_compat.h \
+	whrlpool.h \
+	x509.h x509_vfy.h x509v3.h
+
+INCSDIR=	${INCLUDEDIR}/openssl
+
+CFLAGS+= -Wall -Wundef -Werror
+
+.if ${MACHINE_ARCH} == "sparc"
+PICFLAG=-fPIC
+.endif
+
+# Hardware engines
+CFLAGS+= -DOPENSSL_NO_HW_PADLOCK # XXX enable this?
+
+CFLAGS+= -I${LCRYPTO_SRC} -I${LCRYPTO_SRC}/include
+CFLAGS+= -I${LCRYPTO_SRC}/asn1 -I${LCRYPTO_SRC}/bn -I${LCRYPTO_SRC}/evp
+CFLAGS+= -I${LCRYPTO_SRC}/modes
+
+# XXX FIXME ecdsa and ec should be merged
+CFLAGS+= -I${LCRYPTO_SRC}/ecdsa
+CFLAGS+= -I${LCRYPTO_SRC}/ec
+CFLAGS+= -I${LCRYPTO_SRC}/ecdh
+
+CFLAGS+= -DHAVE_EXPLICIT_BZERO=1 -DHAVE_REALLOCARRAY=1
+
 .include <bsd.lib.mk>
 
 .PATH:	${LCRYPTO_SRC} \
@@ -349,6 +357,7 @@ SRCS+= wp_block.c
 	${LCRYPTO_SRC}/cast \
 	${LCRYPTO_SRC}/chacha \
 	${LCRYPTO_SRC}/cmac \
+	${LCRYPTO_SRC}/cms \
 	${LCRYPTO_SRC}/comp \
 	${LCRYPTO_SRC}/compat \
 	${LCRYPTO_SRC}/conf \
@@ -367,10 +376,7 @@ SRCS+= wp_block.c
 	${LCRYPTO_SRC}/hkdf \
 	${LCRYPTO_SRC}/hmac \
 	${LCRYPTO_SRC}/idea \
-	${LIBRESSL_SRC}/include/openssl \
-	${LIBRESSL_SRC}/include/compat \
 	${LCRYPTO_SRC}/lhash \
-	${LIBRESSL_SRC}/man \
 	${LCRYPTO_SRC}/md4 \
 	${LCRYPTO_SRC}/md5 \
 	${LCRYPTO_SRC}/modes \
@@ -387,6 +393,8 @@ SRCS+= wp_block.c
 	${LCRYPTO_SRC}/ripemd \
 	${LCRYPTO_SRC}/rsa \
 	${LCRYPTO_SRC}/sha \
+	${LCRYPTO_SRC}/sm3 \
+	${LCRYPTO_SRC}/sm4 \
 	${LCRYPTO_SRC}/stack \
 	${LCRYPTO_SRC}/threads \
 	${LCRYPTO_SRC}/ts \
@@ -394,9 +402,7 @@ SRCS+= wp_block.c
 	${LCRYPTO_SRC}/ui \
 	${LCRYPTO_SRC}/whrlpool \
 	${LCRYPTO_SRC}/x509 \
-	${LCRYPTO_SRC}/x509v3
-
-# generated
-CFLAGS+= -I${.OBJDIR}
-
-.include <bsd.lib.mk>
+	${LCRYPTO_SRC}/x509v3 \
+	${LIBRESSL_SRC}/include/openssl \
+	${LIBRESSL_SRC}/include/compat \
+	${LIBRESSL_SRC}/man
