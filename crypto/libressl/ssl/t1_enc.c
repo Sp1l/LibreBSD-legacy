@@ -1,4 +1,4 @@
-/* $OpenBSD: t1_enc.c,v 1.114 2018/09/08 14:39:41 jsing Exp $ */
+/* $OpenBSD: t1_enc.c,v 1.118 2019/05/13 22:48:30 bcook Exp $ */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -155,61 +155,6 @@ tls1_cleanup_key_block(SSL *s)
 	freezero(S3I(s)->hs.key_block, S3I(s)->hs.key_block_len);
 	S3I(s)->hs.key_block = NULL;
 	S3I(s)->hs.key_block_len = 0;
-}
-
-int
-tls1_init_finished_mac(SSL *s)
-{
-	BIO_free(S3I(s)->handshake_buffer);
-
-	S3I(s)->handshake_buffer = BIO_new(BIO_s_mem());
-	if (S3I(s)->handshake_buffer == NULL)
-		return (0);
-
-	(void)BIO_set_close(S3I(s)->handshake_buffer, BIO_CLOSE);
-
-	return (1);
-}
-
-int
-tls1_finish_mac(SSL *s, const unsigned char *buf, int len)
-{
-	if (len < 0)
-		return 0;
-
-	if (!tls1_handshake_hash_update(s, buf, len))
-		return 0;
-
-	if (S3I(s)->handshake_buffer &&
-	    !(s->s3->flags & TLS1_FLAGS_KEEP_HANDSHAKE)) {
-		BIO_write(S3I(s)->handshake_buffer, (void *)buf, len);
-		return 1;
-	}
-
-	return 1;
-}
-
-int
-tls1_digest_cached_records(SSL *s)
-{
-	long hdatalen;
-	void *hdata;
-
-	hdatalen = BIO_get_mem_data(S3I(s)->handshake_buffer, &hdata);
-	if (hdatalen <= 0) {
-		SSLerror(s, SSL_R_BAD_HANDSHAKE_LENGTH);
-		goto err;
-	}
-
-	if (!(s->s3->flags & TLS1_FLAGS_KEEP_HANDSHAKE)) {
-		BIO_free(S3I(s)->handshake_buffer);
-		S3I(s)->handshake_buffer = NULL;
-	}
-
-	return 1;
-
- err:
-	return 0;
 }
 
 void
@@ -579,7 +524,7 @@ tls1_change_cipher_state(SSL *s, int which)
 		iv_len = EVP_CIPHER_iv_length(cipher);
 	}
 
-	mac_secret_size = s->s3->tmp.new_mac_secret_size;
+	mac_secret_size = S3I(s)->tmp.new_mac_secret_size;
 
 	key_block = S3I(s)->hs.key_block;
 	client_write_mac_secret = key_block;
@@ -666,7 +611,7 @@ tls1_setup_key_block(SSL *s)
 	S3I(s)->tmp.new_sym_enc = cipher;
 	S3I(s)->tmp.new_hash = mac;
 	S3I(s)->tmp.new_mac_pkey_type = mac_type;
-	s->s3->tmp.new_mac_secret_size = mac_secret_size;
+	S3I(s)->tmp.new_mac_secret_size = mac_secret_size;
 
 	tls1_cleanup_key_block(s);
 
@@ -726,7 +671,7 @@ tls1_enc(SSL *s, int send)
 	SSL3_RECORD *rec;
 	unsigned char *seq;
 	unsigned long l;
-	int bs, i, j, k, pad = 0, ret, mac_size = 0;
+	int bs, i, j, k, ret, mac_size = 0;
 
 	if (send) {
 		aead = s->internal->aead_write_ctx;
@@ -959,8 +904,6 @@ tls1_enc(SSL *s, int send)
 			mac_size = EVP_MD_CTX_size(s->read_hash);
 		if ((bs != 1) && !send)
 			ret = tls1_cbc_remove_padding(s, rec, bs, mac_size);
-		if (pad && !send)
-			rec->length -= pad;
 	}
 	return ret;
 }
@@ -974,7 +917,7 @@ tls1_final_finish_mac(SSL *s, const char *str, int str_len, unsigned char *out)
 	if (str_len < 0)
 		return 0;
 
-	if (!tls1_handshake_hash_value(s, buf, sizeof(buf), &hash_len))
+	if (!tls1_transcript_hash_value(s, buf, sizeof(buf), &hash_len))
 		return 0;
 
 	if (!tls1_PRF(s, s->session->master_key, s->session->master_key_length,

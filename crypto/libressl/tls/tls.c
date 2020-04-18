@@ -1,4 +1,4 @@
-/* $OpenBSD: tls.c,v 1.80 2018/04/07 16:30:59 jsing Exp $ */
+/* $OpenBSD: tls.c,v 1.83 2019/04/01 15:58:02 jsing Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -256,7 +256,9 @@ tls_configure(struct tls *ctx, struct tls_config *config)
 	if (config == NULL)
 		config = tls_config_default;
 
+	pthread_mutex_lock(&config->mutex);
 	config->refcount++;
+	pthread_mutex_unlock(&config->mutex);
 
 	tls_config_free(ctx->config);
 
@@ -501,7 +503,7 @@ tls_configure_ssl_verify(struct tls *ctx, SSL_CTX *ssl_ctx, int verify)
 
 	/* If no CA has been specified, attempt to load the default. */
 	if (ctx->config->ca_mem == NULL && ctx->config->ca_path == NULL) {
-		if (tls_config_load_file(&ctx->error, "CA", _PATH_SSL_CA_FILE,
+		if (tls_config_load_file(&ctx->error, "CA", tls_default_ca_cert_file(),
 		    &ca_mem, &ca_len) != 0)
 			goto err;
 		ca_free = ca_mem;

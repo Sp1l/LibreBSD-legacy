@@ -1,4 +1,4 @@
-/* $OpenBSD: tls_internal.h,v 1.72 2018/04/07 16:35:34 jsing Exp $ */
+/* $OpenBSD: tls_internal.h,v 1.74 2019/04/01 15:58:02 jsing Exp $ */
 /*
  * Copyright (c) 2014 Jeremie Courreges-Anglas <jca@openbsd.org>
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
@@ -19,16 +19,14 @@
 #ifndef HEADER_TLS_INTERNAL_H
 #define HEADER_TLS_INTERNAL_H
 
+#include <pthread.h>
+
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
 #include <openssl/ssl.h>
 
 __BEGIN_HIDDEN_DECLS
-
-#ifndef _PATH_SSL_CA_FILE
-#define _PATH_SSL_CA_FILE "/etc/ssl/cert.pem"
-#endif
 
 #define TLS_CIPHERS_DEFAULT	"TLSv1.2+AEAD+ECDHE:TLSv1.2+AEAD+DHE"
 #define TLS_CIPHERS_COMPAT	"HIGH:!aNULL"
@@ -79,6 +77,7 @@ struct tls_ticket_key {
 struct tls_config {
 	struct tls_error error;
 
+	pthread_mutex_t mutex;
 	int refcount;
 
 	char *alpn;
