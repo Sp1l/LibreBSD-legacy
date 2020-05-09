@@ -5,7 +5,7 @@ SHLIBDIR?=      /lib
 .include <bsd.own.mk>
 
 LIB=            crypto
-SHLIB_MAJOR=    45
+SHLIB_MAJOR=    46
 
 NO_LINT=
 
@@ -78,6 +78,11 @@ SRCS+= chacha.c
 
 # cmac/
 SRCS+= cmac.c cm_ameth.c cm_pmeth.c
+
+# cms/
+SRCS+= cms_asn1.c cms_att.c cms_cd.c cms_dd.c cms_enc.c cms_env.c cms_err.c
+SRCS+= cms_ess.c cms_io.c cms_kari.c cms_lcl.h cms_lib.c cms_pwri.c cms_sd.c
+SRCS+= cms_smime.c
 
 # comp/
 SRCS+= comp_lib.c comp_err.c c_rle.c c_zlib.c
