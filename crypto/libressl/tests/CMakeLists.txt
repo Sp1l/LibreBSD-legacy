@@ -129,9 +129,15 @@ target_link_libraries(cipherstest ${OPENSSL_LIBS})
 add_test(cipherstest cipherstest)
 
 # clienttest
-add_executable(clienttest clienttest.c)
-target_link_libraries(clienttest ${OPENSSL_LIBS})
-add_test(clienttest clienttest)
+# disabled
+#add_executable(clienttest clienttest.c)
+#target_link_libraries(clienttest ${OPENSSL_LIBS})
+#add_test(clienttest clienttest)
+
+# cmstest
+add_executable(cmstest cmstest.c)
+target_link_libraries(cmstest ${OPENSSL_LIBS})
+add_test(cmstest cmstest)
 
 # configtest
 add_executable(configtest configtest.c)
@@ -218,6 +224,13 @@ add_test(gcm128test gcm128test)
 add_executable(gost2814789t gost2814789t.c)
 target_link_libraries(gost2814789t ${OPENSSL_LIBS})
 add_test(gost2814789t gost2814789t)
+
+# handshake_table
+if(NOT BUILD_SHARED_LIBS)
+	add_executable(handshake_table handshake_table.c)
+	target_link_libraries(handshake_table ${OPENSSL_LIBS})
+	add_test(handshake_table handshake_table)
+endif()
 
 # hkdf_test
 add_executable(hkdf_test hkdf_test.c)
@@ -344,6 +357,13 @@ if(NOT BUILD_SHARED_LIBS)
 	add_executable(recordtest recordtest.c)
 	target_link_libraries(recordtest ${OPENSSL_LIBS})
 	add_test(recordtest recordtest)
+endif()
+
+# record_layer_test
+if(NOT BUILD_SHARED_LIBS)
+	add_executable(record_layer_test record_layer_test.c)
+	target_link_libraries(record_layer_test ${OPENSSL_LIBS})
+	add_test(record_layer_test record_layer_test)
 endif()
 
 # rfc5280time
