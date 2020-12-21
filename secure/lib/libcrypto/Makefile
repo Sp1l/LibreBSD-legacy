@@ -534,7 +534,6 @@ PICFLAG+=	-DOPENSSL_PIC
 	${LCRYPTO_SRC}/crypto/x509 \
 	${LCRYPTO_SRC}/crypto/x509v3 \
 	${LCRYPTO_SRC}/include/openssl
-	${.CURDIR}/man
 
 .else
 .include "Makefile.libressl"

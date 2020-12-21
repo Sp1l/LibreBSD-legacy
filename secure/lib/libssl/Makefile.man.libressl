@@ -1,13 +1,13 @@
 # $OpenBSD: Makefile,v 1.65 2018/03/17 18:52:42 schwarze Exp $
 # $FreeBSD$
 
-MAN= \
-	BIO_f_ssl.3 \
+MAN =	BIO_f_ssl.3 \
 	DTLSv1_listen.3 \
 	OPENSSL_init_ssl.3 \
 	PEM_read_SSL_SESSION.3 \
 	SSL_CIPHER_get_name.3 \
 	SSL_COMP_add_compression_method.3 \
+	SSL_CTX_add1_chain_cert.3 \
 	SSL_CTX_add_extra_chain_cert.3 \
 	SSL_CTX_add_session.3 \
 	SSL_CTX_ctrl.3 \
@@ -101,7 +101,9 @@ MAN= \
 	SSL_renegotiate.3 \
 	SSL_rstate_string.3 \
 	SSL_session_reused.3 \
+	SSL_set1_host.3 \
 	SSL_set1_param.3 \
+	SSL_set_SSL_CTX.3 \
 	SSL_set_bio.3 \
 	SSL_set_connect_state.3 \
 	SSL_set_fd.3 \
@@ -118,6 +120,18 @@ MAN= \
 	ssl.3
 
 MKLINKS+= \
+	BIO_f_ssl.3 BIO_do_handshake.3 \
+	BIO_f_ssl.3 BIO_get_num_renegotiates.3 \
+	BIO_f_ssl.3 BIO_get_ssl.3 \
+	BIO_f_ssl.3 BIO_new_buffer_ssl_connect.3 \
+	BIO_f_ssl.3 BIO_new_ssl.3 \
+	BIO_f_ssl.3 BIO_new_ssl_connect.3 \
+	BIO_f_ssl.3 BIO_set_ssl.3 \
+	BIO_f_ssl.3 BIO_set_ssl_mode.3 \
+	BIO_f_ssl.3 BIO_set_ssl_renegotiate_bytes.3 \
+	BIO_f_ssl.3 BIO_set_ssl_renegotiate_timeout.3 \
+	BIO_f_ssl.3 BIO_ssl_copy_session_id.3 \
+	BIO_f_ssl.3 BIO_ssl_shutdown.3 \
 	PEM_read_SSL_SESSION.3 PEM_read_bio_SSL_SESSION.3 \
 	PEM_read_SSL_SESSION.3 PEM_write_SSL_SESSION.3 \
 	PEM_read_SSL_SESSION.3 PEM_write_bio_SSL_SESSION.3 \
@@ -131,7 +145,20 @@ MKLINKS+= \
 	SSL_CIPHER_get_name.3 SSL_CIPHER_get_version.3 \
 	SSL_CIPHER_get_name.3 SSL_CIPHER_is_aead.3 \
 	SSL_COMP_add_compression_method.3 SSL_COMP_get_compression_methods.3 \
+	SSL_CTX_add1_chain_cert.3 SSL_CTX_add0_chain_cert.3 \
+	SSL_CTX_add1_chain_cert.3 SSL_CTX_clear_chain_certs.3 \
+	SSL_CTX_add1_chain_cert.3 SSL_CTX_get0_chain_certs.3 \
+	SSL_CTX_add1_chain_cert.3 SSL_CTX_set0_chain.3 \
+	SSL_CTX_add1_chain_cert.3 SSL_CTX_set1_chain.3 \
+	SSL_CTX_add1_chain_cert.3 SSL_add0_chain_cert.3 \
+	SSL_CTX_add1_chain_cert.3 SSL_add1_chain_cert.3 \
+	SSL_CTX_add1_chain_cert.3 SSL_clear_chain_certs.3 \
+	SSL_CTX_add1_chain_cert.3 SSL_get0_chain_certs.3 \
+	SSL_CTX_add1_chain_cert.3 SSL_set0_chain.3 \
+	SSL_CTX_add1_chain_cert.3 SSL_set1_chain.3 \
 	SSL_CTX_add_extra_chain_cert.3 SSL_CTX_clear_extra_chain_certs.3 \
+	SSL_CTX_add_extra_chain_cert.3 SSL_CTX_get_extra_chain_certs.3 \
+	SSL_CTX_add_extra_chain_cert.3 SSL_CTX_get_extra_chain_certs_only.3 \
 	SSL_CTX_add_session.3 SSL_CTX_remove_session.3 \
 	SSL_CTX_ctrl.3 SSL_CTX_callback_ctrl.3 \
 	SSL_CTX_ctrl.3 SSL_callback_ctrl.3 \
@@ -186,6 +213,13 @@ MKLINKS+= \
 	SSL_CTX_sess_set_get_cb.3 get_session_cb.3 \
 	SSL_CTX_sess_set_get_cb.3 new_session_cb.3 \
 	SSL_CTX_sess_set_get_cb.3 remove_session_cb.3 \
+	SSL_CTX_set1_groups.3 SSL_CTX_set1_curves.3 \
+	SSL_CTX_set1_groups.3 SSL_CTX_set1_curves_list.3 \
+	SSL_CTX_set1_groups.3 SSL_CTX_set1_groups_list.3 \
+	SSL_CTX_set1_groups.3 SSL_set1_curves.3 \
+	SSL_CTX_set1_groups.3 SSL_set1_curves_list.3 \
+	SSL_CTX_set1_groups.3 SSL_set1_groups.3 \
+	SSL_CTX_set1_groups.3 SSL_set1_groups_list.3 \
 	SSL_CTX_set_alpn_select_cb.3 SSL_CTX_set_alpn_protos.3 \
 	SSL_CTX_set_alpn_select_cb.3 SSL_get0_alpn_selected.3 \
 	SSL_CTX_set_alpn_select_cb.3 SSL_select_next_proto.3 \
@@ -217,7 +251,9 @@ MKLINKS+= \
 	SSL_CTX_set_min_proto_version.3 SSL_get_min_proto_version.3 \
 	SSL_CTX_set_min_proto_version.3 SSL_set_max_proto_version.3 \
 	SSL_CTX_set_min_proto_version.3 SSL_set_min_proto_version.3 \
+	SSL_CTX_set_mode.3 SSL_CTX_clear_mode.3 \
 	SSL_CTX_set_mode.3 SSL_CTX_get_mode.3 \
+	SSL_CTX_set_mode.3 SSL_clear_mode.3 \
 	SSL_CTX_set_mode.3 SSL_get_mode.3 \
 	SSL_CTX_set_mode.3 SSL_set_mode.3 \
 	SSL_CTX_set_msg_callback.3 SSL_CTX_set_msg_callback_arg.3 \
@@ -266,13 +302,6 @@ MKLINKS+= \
 	SSL_CTX_set_verify.3 SSL_set_verify.3 \
 	SSL_CTX_set_verify.3 SSL_set_verify_depth.3 \
 	SSL_CTX_set_verify.3 verify_callback.3 \
-	SSL_CTX_set1_groups.3 SSL_CTX_set1_curves.3 \
-	SSL_CTX_set1_groups.3 SSL_CTX_set1_curves_list.3 \
-	SSL_CTX_set1_groups.3 SSL_CTX_set1_groups_list.3 \
-	SSL_CTX_set1_groups.3 SSL_set1_curves.3 \
-	SSL_CTX_set1_groups.3 SSL_set1_curves_list.3 \
-	SSL_CTX_set1_groups.3 SSL_set1_groups.3 \
-	SSL_CTX_set1_groups.3 SSL_set1_groups_list.3 \
 	SSL_CTX_use_certificate.3 SSL_CTX_check_private_key.3 \
 	SSL_CTX_use_certificate.3 SSL_CTX_use_PrivateKey.3 \
 	SSL_CTX_use_certificate.3 SSL_CTX_use_PrivateKey_ASN1.3 \
@@ -367,4 +396,4 @@ MKLINKS+= \
 	SSL_want.3 SSL_want_read.3 \
 	SSL_want.3 SSL_want_write.3 \
 	SSL_want.3 SSL_want_x509_lookup.3 \
-	d2i_SSL_SESSION.3 i2d_SSL_SESSION.3 \
+	d2i_SSL_SESSION.3 i2d_SSL_SESSION.3
